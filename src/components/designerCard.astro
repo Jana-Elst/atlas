@@ -1,0 +1,53 @@
+---
+import { Image } from "astro:assets";
+const { designer } = Astro.props;
+---
+
+<style>
+    .wrapper {
+        display: grid;
+        grid-template-columns: max-content min-content;
+        grid-template-rows: max-content;
+        justify-content: center;
+        padding: var(--sp-s);
+        transition: background-color 0.3s;
+    }
+
+    .image {
+        opacity: 75%;
+        aspect-ratio: 1;
+        object-fit: cover;
+    }
+
+    .name {
+        margin-top: var(--sp-s);
+        font-size: var(--fs-1);
+        font-weight: 400;
+    }
+
+    .wrapper:hover > a > .image {
+        opacity: 100%;
+    }
+
+    .wrapper:hover > a > .name {
+        font-weight: 500;
+    }
+</style>
+
+<div class="wrapper">
+    <a href={`${import.meta.env.BASE_URL}designer/${designer.slug}`}>
+        <Image
+            src={`${import.meta.env.STRAPI_URL}${designer.image.url}`}
+            alt="Product image"
+            width="300"
+            height="400"
+            widths={[250, 350, 500, 750]}
+            format="avif"
+            sizes="300px"
+            class="image"
+        />
+        <p class="name">
+            {`${designer.surname} ${designer.lastname}`}
+        </p>
+    </a>
+</div>

@@ -1,0 +1,167 @@
+---
+//variabelen
+const { designer } = Astro.props;
+
+//components & layouts
+import BaseLayout from "../../layouts/base.astro";
+import fetchApi from "../../lib/strapi";
+import { Image } from "astro:assets";
+import FurnitureCard from "../../components/furnitureCard.astro";
+import ButtonRandom from "../../components/buttonRandom.astro";
+import FurnitureListDetail from "../../components/furnitureListDetail.astro";
+
+//API
+export async function getStaticPaths() {
+  const designers = await fetchApi({
+    endpoint: "designers",
+    query: {
+      populate: ["image", "bio", "furnitures", "furnitures.image"],
+    },
+    wrappedByKey: "data",
+  });
+
+  const paths = designers.map((designer, i) => ({
+    params: { slug: designer.slug },
+    props: {
+      designer,
+    },
+  }));
+  return paths;
+}
+
+const designers = await fetchApi({
+    endpoint: "designers",
+    query: {
+      pagination: {
+            pageSize: 50,
+      },
+    },
+    wrappedByKey: "data",
+});
+
+---
+  <style>
+
+    .intro {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: var(--sp-s);
+      margin-bottom: var(--sp-s);
+    }
+
+    .intro__content {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: var(--sp-s);
+    }
+
+    .name {
+      font-size: var(--fs-5);
+      font-weight: 200;
+    }
+
+    .info {
+      font-size: var(--fs-1);
+      font-weight: 200;
+      font-style: italic;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: 45vw 1fr;
+      grid-template-rows: 50vh max-content;
+      column-gap: var(--sp-xl);
+      row-gap: var(--sp-s);
+      align-items: start;
+    }
+
+    .bio {
+      grid-row: 1 / 3;
+      grid-column: 2;
+    }
+
+    .subtitle {
+      font-size: var(--fs-3);
+      font-weight: 200;
+    }
+
+    .bio__date {
+      font-size: var(--fs-1);
+    }
+
+    .bio__description + .bio__date {
+      margin-top: var(--sp-xs);
+    }
+
+    .image {
+      height: 50vh;
+      width: 50vh;
+      object-fit: cover;
+    }
+
+  </style>
+
+
+  <BaseLayout pageTitle={designer.lastname}>
+    <div class="container designer">
+      <div class="intro">
+        <div class="intro__content">
+          <h2 class="name">{`${designer.surname} ${designer.lastname}`}</h2>
+          <p class="info">{
+            (() => {
+              if (designer.death && designer.landDeath) {
+              return `(${designer.birth}, ${designer.landBirth} - ${designer.death}, ${designer.landDeath})`
+            } else {
+              return `(${designer.birth}, ${designer.landBirth})`
+            }
+            })
+            }
+            </p>
+        </div>
+            <ButtonRandom elementName={'designer'}, elements={designers}/>
+      </div>
+
+        <div class="content">
+            <Image
+              src={`${import.meta.env.STRAPI_URL}${designer.image.url}`}
+              alt="Product image"
+              width="500"
+              height="500"
+              widths={[256, 1134, 1440, 1770, 2048]}
+              format="avif"
+              class="image"
+              sizes="28.11vw"
+            />
+          
+                <div class="bio">
+          <h3 class="subtitle">Bio</h3>
+          <dl class="bio__content">
+            {
+              designer.bio.map((item) => (
+                  <dt class="bio__date">
+                    {item.date}
+                  </dt>
+                  <dd class="bio__description">
+                    {item.description}
+                  </dd>
+              ))
+            }
+          </dl>
+                </div>
+                <div class="furniture">
+          <FurnitureListDetail>
+            {
+                designer.furnitures.map((furniture) => (
+                    <li>
+                      <FurnitureCard furniture={furniture} /> <!-- in alle meubels zoek je op basis van furniture.slug het meubel dat overeenkomt met dezelfde slug. Die referentieslug komt uit designer.furnitures -->
+                    </li>
+                ))
+            }
+          </FurnitureListDetail>
+                </div>
+              </div>
+            </BaseLayout>
+        </div>

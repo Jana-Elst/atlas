@@ -1,0 +1,69 @@
+---
+import { Image } from "astro:assets";
+const { furniture } = Astro.props;
+
+//make correct string for url
+// let furnitureURL = furniture.title;
+// furnitureURL = furnitureURL
+//     .replace(/ /g, "-")
+//     .replace(/\//g, "-")
+//     .replace(/\./g, "-")
+//     .replace(/\,/g, "-")
+//     .replace(/\ù/g, "u")
+//     .replace(/\(/g, "-")
+//     .replace(/\)/g, "-")
+//     .replace(/(\d+)([A-Za-z])/g, "$1-$2")
+//     .replace(/--+/g, "-")
+//     .replace(/-$/, "");
+
+// furnitureURL = furnitureURL.toLowerCase();
+---
+
+<style>
+    .wrapper > a {
+        display: grid;
+        grid-template-columns: 19rem;
+        justify-content: center;
+        padding: var(--sp-s);
+        transition: background-color 0.3s;
+    }
+
+    .image {
+        opacity: 75%;
+        aspect-ratio: 1;
+        object-fit: contain;
+    }
+
+    .name {
+        margin-top: var(--sp-s);
+        font-size: var(--fs-1);
+        font-weight: 400;
+        justify-self: start;
+    }
+
+    .wrapper:hover > a > .image {
+        opacity: 100%;
+    }
+
+    .wrapper:hover > a > .name {
+        font-weight: 500;
+    }
+</style>
+
+<div class="wrapper">
+    <a href={`${import.meta.env.BASE_URL}furniture/${furniture.slug}`}>
+        <Image
+            src={`${import.meta.env.STRAPI_URL}${furniture.image.url}`}
+            alt="Product image"
+            width="300"
+            height="400"
+            widths={[250, 350, 500, 750]}
+            format="avif"
+            sizes="300px"
+            class="image"
+        />
+        <p class="name">
+            {`${furniture.title}`}
+        </p>
+    </a>
+</div>

@@ -1,0 +1,36 @@
+---
+const { buttonText, btnURL, btnClass } = Astro.props;
+---
+
+<style>
+    div {
+        font-size: var(--fs-1);
+        font-weight: 300;
+        transition: all 0.5s;
+        padding: var(--sp-2xs) var(--sp-xs);
+        border: 1px solid var(--color-black);
+        transition: all 0.5s;
+    }
+
+    div:hover {
+        font-weight: 400;
+        background-color: var(--color-black);
+    }
+
+    div:hover > a {
+        color: #fff;
+        font-weight: 400;
+    }
+</style>
+
+<div>
+    {
+        btnClass === "btn-extern" ? (
+            <a href={`${btnURL}`} target="_blank">{buttonText}</a>
+        ) : (
+            <a href={`${import.meta.env.BASE_URL}${btnURL}`}>{buttonText}</a>
+        )
+    }
+</div>
+
+<!-- <div><a href=`${import.meta.env.BASE_URL}${btnURL}`>{buttonText}</a></div> -->

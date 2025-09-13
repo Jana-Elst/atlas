@@ -1,0 +1,31 @@
+---
+//components & layouts
+import Base from "../layouts/base.astro";
+import ListPage from "../components/listPage.astro";
+import DesignerCard from "../components/DesignerCard.astro";
+
+//API
+import fetchApi from "../lib/strapi";
+const designers = await fetchApi({
+    endpoint: "designers",
+    query: {
+        populate: ["image", "bio"],
+        sort: ["lastname"],
+    },
+    wrappedByKey: "data",
+});
+
+console.log(designers);
+---
+
+<Base title="designers">
+    <ListPage title={"designers"}>
+        {
+            designers.map((designer) => (
+                <li>
+                    <DesignerCard designer={designer} />
+                </li>
+            ))
+        }
+    </ListPage>
+</Base>
